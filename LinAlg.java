@@ -5,6 +5,8 @@ import java.util.Scanner;
 /**
  * Created by Brandon on 10/19/2020, 10:06 AM.
  */
+
+
 public class LinAlg {
     public static void main(String[] args) {
         // Introduce scanner
@@ -14,6 +16,7 @@ public class LinAlg {
         System.out.println("Conventions: ");
         System.out.println("1. An M x N matrix contains M rows and N columns.");
         System.out.println("2. All indices are 0-based, meaning they start from 0 and count upwards");
+        System.out.println("");
         System.out.println("");
         // End of directions, starts user input
         //
