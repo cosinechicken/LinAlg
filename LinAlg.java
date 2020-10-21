@@ -90,6 +90,8 @@ public class LinAlg {
     }
     private static class Matrix {
         private int[][] vals;
+        // Position of leftmost nonzero number in each row
+        private int[] pivots;
         private int M;
         private int N;
         private Matrix(int M, int N) {
@@ -97,19 +99,44 @@ public class LinAlg {
             this.M = M;
             this.N = N;
             vals = new int[M][N];
+            pivots = new int[M];
+            for (int i = 0; i < M; i++) {
+                pivots[i] = N;
+            }
         }
         private Matrix(int[][] vals) {
             M = vals.length;
             N = vals[0].length;
             this.vals = new int[M][N];
+            pivots = new int[M];
             for (int i = 0; i < M; i++) {
+                boolean isNonZero = false;
                 for (int j = 0; j < N; j++) {
                     this.vals[i][j] = vals[i][j];
+                    if (vals[i][j] != 0 && !isNonZero) {
+                        isNonZero = true;
+                        pivots[i] = j;
+                    }
+                }
+                if (!isNonZero) {
+                    pivots[i] = N;
                 }
             }
         }
         public void setValue(int val, int i, int j) {
             this.vals[i][j] = val;
+            // FInd pivot (inefficient, should improve)
+            boolean isNonZero = false;
+            for (int k = 0; k < N; k++) {
+                this.vals[i][k] = vals[i][k];
+                if (vals[i][k] != 0 && !isNonZero) {
+                    isNonZero = true;
+                    pivots[i] = k;
+                }
+            }
+            if (!isNonZero) {
+                pivots[i] = N;
+            }
         }
         public String toString() {
             String str = "";
@@ -119,6 +146,10 @@ public class LinAlg {
                     str += "\t";
                 }
                 str += "\n";
+            }
+            str += "\n";
+            for (int i = 0; i < M; i++) {
+                str += (pivots[i] + "\n");
             }
             return str;
         }
@@ -130,17 +161,35 @@ public class LinAlg {
                 vals[i][k] = vals[j][k];
                 vals[j][k] = temp;
             }
+            temp = pivots[i];
+            pivots[i] = pivots[j];
+            pivots[j] = temp;
         }
         // Scale values in row i by some integer scale
         public void scale(int i, int scale) {
             for (int j = 0; j < N; j++) {
                 vals[i][j] *= scale;
             }
+            if (scale == 0) {
+                pivots[i] = N;
+            }
         }
         // Add row i to row j
         public void addRow(int i, int j) {
             for (int k = 0; k < N; k++) {
                 vals[j][k] += vals[i][k];
+            }
+            // Find pivot (inefficient)
+            boolean isNonZero = false;
+            for (int k = 0; k < N; k++) {
+                this.vals[j][k] = vals[j][k];
+                if (vals[j][k] != 0 && !isNonZero) {
+                    isNonZero = true;
+                    pivots[j] = k;
+                }
+            }
+            if (!isNonZero) {
+                pivots[j] = N;
             }
         }
         // Divides by gcd of numbers in row i and makes the first nonzero entry positive
@@ -150,18 +199,10 @@ public class LinAlg {
                 for (int j = 0; j < N; j++) {
                     vals[i][j] /= gcd;
                 }
-                // Go through variables and make leftmost nonzero one positive
+                // Make leftmost nonzero variable positive
                 // Since gcd != 0 some variable is nonzero
-                boolean isNonZero = false;
-                int counter = 0;
-                while (!isNonZero) {
-                    if (vals[i][counter] != 0) {
-                        isNonZero = true;
-                    } else {
-                        counter++;
-                    }
-                }
-                if (vals[i][counter] < 0) {
+
+                if (vals[i][pivots[i]] < 0) {
                     for (int j = 0; j < N; j++) {
                         vals[i][j] *= -1;
                     }
