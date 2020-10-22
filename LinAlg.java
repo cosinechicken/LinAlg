@@ -18,7 +18,6 @@ public class LinAlg {
         System.out.println("1. An M x N matrix contains M rows and N columns.");
         System.out.println("2. All indices are 0-based, meaning they start from 0 and count upwards");
         System.out.println("");
-        System.out.println("");
         // End of directions, starts user input
         //
         System.out.println("Enter \"Y\" if pivots of matrices should be displayed, enter anything else otherwise: ");
@@ -64,6 +63,7 @@ public class LinAlg {
                 System.out.println("\"X [i] [scale]\": Multiplies the elements in row [i] by the integer [scale].");
                 System.out.println("\"A [i] [j]\": Adds row [i] to row [j].");
                 System.out.println("\"D [i]\": Divides the row [i] by the greatest common divisor of numbers in the row and makes the first nonzero element in the row positive.");
+                System.out.println("\"C [i] [j]\": Adds one of row [i] and row [j] by a scalar multiple of the other row to simplify it. Prints out the operations used. For now should only run after descaling all rows");
                 System.out.println("\"Q\": End the program.");
             } else if (inputArr[0].equals("S")) {
                 int i = Integer.parseInt(inputArr[1]);
@@ -86,6 +86,12 @@ public class LinAlg {
             } else if (inputArr[0].equals("D")) {
                 int i = Integer.parseInt(inputArr[1]);
                 matrix.descale(i);
+                System.out.println("The resulting matrix is below:");
+                System.out.println(matrix);
+            } else if (inputArr[0].equals("C")) {
+                int i = Integer.parseInt(inputArr[1]);
+                int j = Integer.parseInt(inputArr[2]);
+                matrix.cancel(i,j);
                 System.out.println("The resulting matrix is below:");
                 System.out.println(matrix);
             } else if (inputArr[0].equals("Q")) {
@@ -203,8 +209,9 @@ public class LinAlg {
             }
         }
         // Divides by gcd of numbers in row i and makes the first nonzero entry positive
-        public void descale(int i) {
+        public int descale(int i) {
             int gcd = gcdArr(vals[i]);
+            int factor = gcd;
             if (gcd != 0) {
                 for (int j = 0; j < N; j++) {
                     vals[i][j] /= gcd;
@@ -213,13 +220,68 @@ public class LinAlg {
                 // Since gcd != 0 some variable is nonzero
 
                 if (vals[i][pivots[i]] < 0) {
+                    factor *= -1;
                     for (int j = 0; j < N; j++) {
                         vals[i][j] *= -1;
                     }
                 }
+            } else if (gcd == 0) {
+                factor = 1;
             }
+            return factor;
 
         }
+        // Adds a scalar multiple of row i to row j so that vals[j][pivots[i]] = 0 (or vice versa)
+        // Also helper method for toREF()
+        public void cancel(int i, int j) {
+            // (a,b) = (i,j) if pivots[i] > pivots[j] or pivots[i] = pivots[j] and i < j, and (j,i) otherwise
+            int a;
+            int b;
+            if (pivots[i] > pivots[j] || (pivots[i] == pivots[j] && i < j)) {
+                a = i;
+                b = j;
+            } else {
+                a = j;
+                b = i;
+            }
+            // Now begin cancelling
+            this.descale(a);
+            this.descale(b);
+
+            // Fraction written in form scaleA_N/scaleA_D
+            int scaleA_N = 1;
+            int scaleA_D = 1;
+            scaleA_N *= vals[b][pivots[a]];
+            scaleA_D *= -vals[a][pivots[a]];
+            int scaleB_N = scaleA_D;
+
+            this.scale(a,scaleA_N);
+            this.scale(b,scaleA_D);
+            this.addRow(a, b);
+            this.descale(a);
+            int scaleB_D = this.descale(b);
+
+            // Simplify fractions
+            int gcdA = gcd(scaleA_N, scaleA_D);
+            scaleA_N /= gcdA;
+            scaleA_D /= gcdA;
+            if (scaleA_D < 0) {
+                scaleA_N *= -1;
+                scaleA_D *= -1;
+            }
+
+            int gcdB = gcd(scaleB_N, scaleB_D);
+            scaleB_N /= gcdB;
+            scaleB_D /= gcdB;
+            if (scaleB_D < 0) {
+                scaleB_N *= -1;
+                scaleB_D *= -1;
+            }
+
+            System.out.println("R_" + b + " -> (R_" + b + " + " + scaleA_N + "/" + scaleA_D + "* R_" + a + ") * (" + scaleB_N + "/" + scaleB_D + ")");
+        }
+        // Helper methods
+
         // Finds gcd of i and j (want my own implementation to make sure negatives are dealt with correctly and to show off)
         private int gcd(int i, int j) {
             // Take absolute values
