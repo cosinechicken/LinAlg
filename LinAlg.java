@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 
 public class LinAlg {
+    public static boolean showPivots;
     public static void main(String[] args) {
         // Introduce scanner
         Scanner scanner = new Scanner(System.in);
@@ -20,6 +21,13 @@ public class LinAlg {
         System.out.println("");
         // End of directions, starts user input
         //
+        System.out.println("Enter \"Y\" if pivots of matrices should be displayed, enter anything else otherwise: ");
+        String pivotString = scanner.nextLine();
+        if (pivotString.equals("Y")) {
+            showPivots = true;
+        } else {
+            showPivots = false;
+        }
         // Get dimensions of matrix
         System.out.println("Enter the dimensions of the matrix (in the form \"M N\"): ");
         String dimString = scanner.nextLine();
@@ -147,9 +155,11 @@ public class LinAlg {
                 }
                 str += "\n";
             }
-            str += "\n";
-            for (int i = 0; i < M; i++) {
-                str += (pivots[i] + "\n");
+            if (showPivots) {
+                str += "\n";
+                for (int i = 0; i < M; i++) {
+                    str += (pivots[i] + "\n");
+                }
             }
             return str;
         }
