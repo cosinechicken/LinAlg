@@ -250,8 +250,9 @@ public class Matrix {
                     ret += (this.swap(i, firstIndex) + "\n");
                     ret += (this.toString() + "\n");
                 }
+                // Now we can assume the index we want to apply this.cancel() with is at i
                 for (int j = 0; j < arr.size(); j++) {
-                    ret += (this.cancel(firstIndex, arr.get(j)) + "\n");
+                    ret += (this.cancel(i, arr.get(j)) + "\n");
                     ret += (this.toString() + "\n");
                 }
             }
