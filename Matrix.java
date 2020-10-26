@@ -1,5 +1,7 @@
 package com.company.LinAlg;
 
+import java.util.ArrayList;
+
 import static com.company.LinAlg.LinAlg.showPivots;
 
 /**
@@ -72,8 +74,9 @@ public class Matrix {
         }
         return str;
     }
-    // Swap rows i and j (0-based indices)
-    public void swap(int i, int j) {
+    // Swap rows i and j (1-based indices)
+    // Return the string it is supposed to print
+    public String swap(int i, int j) {
         int temp;
         for (int k = 0; k < N; k++) {
             temp = vals[i][k];
@@ -83,6 +86,7 @@ public class Matrix {
         temp = pivots[i];
         pivots[i] = pivots[j];
         pivots[j] = temp;
+        return ("R_" + (i+1) + " <-> R_" + (j+1));
     }
     // Scale values in row i by some integer scale
     public void scale(int i, int scale) {
@@ -128,7 +132,7 @@ public class Matrix {
                     vals[i][j] *= -1;
                 }
             }
-        } else if (gcd == 0) {
+        } else {
             factor = 1;
         }
         return factor;
@@ -136,10 +140,13 @@ public class Matrix {
     }
     // Adds a scalar multiple of row i to row j so that vals[j][pivots[i]] = 0 (or vice versa)
     // Also helper method for toREF()
-    public void cancel(int i, int j) {
+    // Returns the string it is supposed to print
+    public String cancel(int i, int j) {
         // (a,b) = (i,j) if pivots[i] > pivots[j] or pivots[i] = pivots[j] and i < j, and (j,i) otherwise
         int a;
         int b;
+        // String to print
+        String ret = "";
         if (pivots[i] > pivots[j] || (pivots[i] == pivots[j] && i < j)) {
             a = i;
             b = j;
@@ -148,8 +155,16 @@ public class Matrix {
             b = i;
         }
         // Now begin cancelling
-        this.descale(a);
-        this.descale(b);
+        int aScale = this.descale(a);
+        if (aScale != 1) {
+            ret += "R_" + (a + 1) + " -> (1/" + aScale + ") * R_" + (a + 1) + "\n";
+            ret += this.toString() + "\n";
+        }
+        int bScale = this.descale(b);
+        if (bScale != 1) {
+            ret += "R_" + (b + 1) + " -> (1/" + bScale + ") * R_" + (b + 1) + "\n";
+            ret += this.toString() + "\n";
+        }
 
         // Fraction written in form scaleA_N/scaleA_D
         int scaleA_N = 1;
@@ -181,7 +196,8 @@ public class Matrix {
             scaleB_D *= -1;
         }
 
-        System.out.println("R_" + (b+1) + " -> (R_" + (b+1) + " + " + scaleA_N + "/" + scaleA_D + "* R_" + (a+1) + ") * (" + scaleB_N + "/" + scaleB_D + ")");
+        ret += ("R_" + (b+1) + " -> (R_" + (b+1) + " + " + scaleA_N + "/" + scaleA_D + " * R_" + (a+1) + ") * (" + scaleB_N + "/" + scaleB_D + ")");
+        return ret;
     }
     // Helper methods
 
@@ -212,7 +228,36 @@ public class Matrix {
     }
 
     // REF stands for Row Echelon Form [I]
-    public void toREF() {
+    public String toREF() {
+        String ret = "";
+        // First find rows with minimum value for pivot
+        ArrayList<Integer> arr = new ArrayList<>();
+        for (int i = 0; i < M; i++) {
+            int pivotVal = Integer.MAX_VALUE;
+            int firstIndex = -1;
+            arr.clear();
+            for (int j = i; j < M; j++) {
+                if (pivots[j] < pivotVal) {
+                    pivotVal = pivots[j];
+                    arr.clear();
+                    firstIndex = j;
+                } else if (pivots[j] == pivotVal) {
+                    arr.add(j);
+                }
+            }
+            if (pivotVal < N) {
+                if (firstIndex != i) {
+                    ret += (this.swap(i, firstIndex) + "\n");
+                    ret += (this.toString() + "\n");
+                }
+                for (int j = 0; j < arr.size(); j++) {
+                    ret += (this.cancel(firstIndex, arr.get(j)) + "\n");
+                    ret += (this.toString() + "\n");
+                }
+            }
+        }
+        // At this point all nonzero rows should have distinct pivots
+        return ret;
 
     }
 }

@@ -64,11 +64,13 @@ public class LinAlg {
                 System.out.println("\"A [i] [j]\": Adds row [i] to row [j].");
                 System.out.println("\"D [i]\": Divides the row [i] by the greatest common divisor of numbers in the row and makes the first nonzero element in the row positive.");
                 System.out.println("\"C [i] [j]\": Adds one of row [i] and row [j] by a scalar multiple of the other row to simplify it. Prints out the operations used. For now should only run after descaling all rows");
+                System.out.println("\"R\": Simplifies to REF form and shows work.");
                 System.out.println("\"Q\": End the program.");
             } else if (inputArr[0].equals("S")) {
                 int i = Integer.parseInt(inputArr[1]);
                 int j = Integer.parseInt(inputArr[2]);
-                matrix.swap(i-1,j-1);
+                String operation = matrix.swap(i-1,j-1);
+                System.out.println(operation);
                 System.out.println("The resulting matrix is below:");
                 System.out.println(matrix);
             } else if (inputArr[0].equals("X")) {
@@ -91,9 +93,12 @@ public class LinAlg {
             } else if (inputArr[0].equals("C")) {
                 int i = Integer.parseInt(inputArr[1]);
                 int j = Integer.parseInt(inputArr[2]);
-                matrix.cancel(i-1,j-1);
+                String operation = matrix.cancel(i-1,j-1);
+                System.out.println(operation);
                 System.out.println("The resulting matrix is below:");
                 System.out.println(matrix);
+            } else if (inputArr[0].equals("R")) {
+                System.out.println(matrix.toREF());
             } else if (inputArr[0].equals("Q")) {
                 doQuit = true;
             } else {
