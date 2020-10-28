@@ -25,6 +25,10 @@ public class Fraction {
     }
     public String toString() {
         this.simplify();
-        return N + "/" + D;
+        if (D == 1) {
+            return N + "";
+        } else {
+            return N + "/" + D;
+        }
     }
 }

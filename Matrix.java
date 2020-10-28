@@ -157,12 +157,14 @@ public class Matrix {
         // Now begin cancelling
         int aScale = this.descale(a);
         if (aScale != 1) {
-            ret += "R_" + (a + 1) + " -> (1/" + aScale + ") * R_" + (a + 1) + "\n";
+            Fraction aScaleFrac = new Fraction(1,aScale);
+            ret += "R_" + (a + 1) + " -> (" + aScaleFrac + ") * R_" + (a + 1) + "\n";
             ret += this.toString() + "\n";
         }
         int bScale = this.descale(b);
         if (bScale != 1) {
-            ret += "R_" + (b + 1) + " -> (1/" + bScale + ") * R_" + (b + 1) + "\n";
+            Fraction bScaleFrac = new Fraction(1,bScale);
+            ret += "R_" + (b + 1) + " -> (" + bScaleFrac + ") * R_" + (b + 1) + "\n";
             ret += this.toString() + "\n";
         }
 
@@ -171,7 +173,6 @@ public class Matrix {
         int scaleA_D = 1;
         scaleA_N *= vals[b][pivots[a]];
         scaleA_D *= -vals[a][pivots[a]];
-        int scaleB_N = scaleA_D;
 
         this.scale(a,scaleA_N);
         this.scale(b,scaleA_D);
@@ -179,24 +180,10 @@ public class Matrix {
         this.descale(a);
         int scaleB_D = this.descale(b);
 
-        // Simplify fractions
-        int gcdA = Math.gcd(scaleA_N, scaleA_D);
-        scaleA_N /= gcdA;
-        scaleA_D /= gcdA;
-        if (scaleA_D < 0) {
-            scaleA_N *= -1;
-            scaleA_D *= -1;
-        }
+        Fraction scaleAFrac = new Fraction(scaleA_N, scaleB_D);
+        Fraction scaleBFrac = new Fraction(scaleA_D, scaleB_D);
 
-        int gcdB = Math.gcd(scaleB_N, scaleB_D);
-        scaleB_N /= gcdB;
-        scaleB_D /= gcdB;
-        if (scaleB_D < 0) {
-            scaleB_N *= -1;
-            scaleB_D *= -1;
-        }
-
-        ret += ("R_" + (b+1) + " -> (R_" + (b+1) + " + " + scaleA_N + "/" + scaleA_D + " * R_" + (a+1) + ") * (" + scaleB_N + "/" + scaleB_D + ")");
+        ret += ("R_" + (b+1) + " -> (" + scaleBFrac + ") * R_" + (b+1) + " + (" + scaleAFrac + ") * R_" + (a+1));
         return ret;
     }
     // Helper methods
