@@ -117,7 +117,7 @@ public class Matrix {
     }
     // Divides by gcd of numbers in row i and makes the first nonzero entry positive
     public int descale(int i) {
-        int gcd = gcdArr(vals[i]);
+        int gcd = Math.gcdArr(vals[i]);
         int factor = gcd;
         if (gcd != 0) {
             for (int j = 0; j < N; j++) {
@@ -180,7 +180,7 @@ public class Matrix {
         int scaleB_D = this.descale(b);
 
         // Simplify fractions
-        int gcdA = gcd(scaleA_N, scaleA_D);
+        int gcdA = Math.gcd(scaleA_N, scaleA_D);
         scaleA_N /= gcdA;
         scaleA_D /= gcdA;
         if (scaleA_D < 0) {
@@ -188,7 +188,7 @@ public class Matrix {
             scaleA_D *= -1;
         }
 
-        int gcdB = gcd(scaleB_N, scaleB_D);
+        int gcdB = Math.gcd(scaleB_N, scaleB_D);
         scaleB_N /= gcdB;
         scaleB_D /= gcdB;
         if (scaleB_D < 0) {
@@ -201,31 +201,6 @@ public class Matrix {
     }
     // Helper methods
 
-    // Finds gcd of i and j (want my own implementation to make sure negatives are dealt with correctly and to show off)
-    private int gcd(int i, int j) {
-        // Take absolute values
-        int iPos = Math.abs(i);
-        int jPos = Math.abs(j);
-        if (iPos == jPos && iPos == 0) {
-            return 0;
-        } else if (iPos == 0) {
-            return jPos;
-        } else if (jPos == 0) {
-            return iPos;
-        } else if (iPos > jPos) {
-            return gcd(iPos%jPos, jPos);
-        } else {
-            return gcd(iPos, jPos%iPos);
-        }
-    }
-    // Finds gcd of integers in an integer array arr
-    private int gcdArr(int[] arr) {
-        int gcd = Math.abs(arr[0]);
-        for (int i = 1; i < arr.length; i++) {
-            gcd = gcd(gcd,arr[i]);
-        }
-        return gcd;
-    }
 
     // REF stands for Row Echelon Form [I]
     public String toREF() {
