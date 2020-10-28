@@ -1,5 +1,7 @@
 package com.company.LinAlg;
 
+import com.sun.org.apache.xpath.internal.SourceTree;
+
 import java.util.Scanner;
 
 /**
@@ -21,6 +23,7 @@ public class LinAlg {
         // End of directions, starts user input
         //
         System.out.println("Enter \"Y\" if pivots of matrices should be displayed, enter anything else otherwise: ");
+        System.out.print(">> ");
         String pivotString = scanner.nextLine();
         if (pivotString.equals("Y")) {
             showPivots = true;
@@ -29,6 +32,7 @@ public class LinAlg {
         }
         // Get dimensions of matrix
         System.out.println("Enter the dimensions of the matrix (in the form \"M N\"): ");
+        System.out.print(">> ");
         String dimString = scanner.nextLine();
         String[] dimArr = dimString.split(" ");
         int dimM = Integer.parseInt(dimArr[0]);
@@ -39,6 +43,7 @@ public class LinAlg {
         System.out.println("You will now the entries of the matrix, separated by a single space. ");
         for (int i = 0; i < dimM; i++) {
             System.out.println("Enter the entries of row #" + (i+1) + ": ");
+            System.out.print(">> ");
             String input = scanner.nextLine();
             String[] inputArr = input.split(" ");
             for (int j = 0; j < dimN; j++) {
@@ -54,6 +59,7 @@ public class LinAlg {
         boolean doQuit = false;
         while (!doQuit) {
             System.out.println("Enter next command (enter \"H\" for help): ");
+            System.out.print(">> ");
             String input = scanner.nextLine();
             String[] inputArr = input.split(" ");
             if (inputArr[0].equals("H")) {
@@ -67,30 +73,111 @@ public class LinAlg {
                 System.out.println("\"R\": Simplifies to REF form and shows work.");
                 System.out.println("\"Q\": End the program.");
             } else if (inputArr[0].equals("S")) {
-                int i = Integer.parseInt(inputArr[1]);
-                int j = Integer.parseInt(inputArr[2]);
+                if (inputArr.length < 3) {
+                    System.out.println("Error: You need at least 2 arguments for this command");
+                }
+                int i;
+                int j;
+                try {
+                    i = Integer.parseInt(inputArr[1]);
+                } catch(NumberFormatException e){
+                    System.out.println("Error: \"" + inputArr[1] + "\" is not an integer. Please enter an integer.");
+                    continue;
+                }
+                try {
+                    j = Integer.parseInt(inputArr[2]);
+                } catch(NumberFormatException e){
+                    System.out.println("Error: \"" + inputArr[2] + "\" is not an integer. Please enter an integer.");
+                    continue;
+                }
+                if (!Math.isInRange(i,1,dimM)) {
+                    System.out.println("Error: Row numbers must be between 1 and " + dimM + " inclusive. ");
+                    continue;
+                }
+                if (!Math.isInRange(j,1,dimM)) {
+                    System.out.println("Error: Row numbers must be between 0 and " + dimM + " inclusive. ");
+                    continue;
+                }
                 String operation = matrix.swap(i-1,j-1);
                 System.out.println(operation);
                 System.out.println("The resulting matrix is below:");
                 System.out.println(matrix);
             } else if (inputArr[0].equals("X")) {
-                int i = Integer.parseInt(inputArr[1]);
-                int scale = Integer.parseInt(inputArr[2]);
+                if (inputArr.length < 3) {
+                    System.out.println("Error: You need at least 2 arguments for this command");
+                }
+                int i;
+                int scale;
+                try {
+                    i = Integer.parseInt(inputArr[1]);
+                } catch(NumberFormatException e){
+                    System.out.println("Error: \"" + inputArr[1] + "\" is not an integer. Please enter an integer.");
+                    continue;
+                }
+                try {
+                    scale = Integer.parseInt(inputArr[2]);
+                } catch(NumberFormatException e){
+                    System.out.println("Error: \"" + inputArr[2] + "\" is not an integer. Please enter an integer.");
+                    continue;
+                }
+                if (!Math.isInRange(i,1,dimM)) {
+                    System.out.println("Error: Row numbers must be between 1 and " + dimM + " inclusive. ");
+                    continue;
+                }
                 matrix.scale(i-1,scale);
                 System.out.println("The resulting matrix is below:");
                 System.out.println(matrix);
             } else if (inputArr[0].equals("A")) {
-                int i = Integer.parseInt(inputArr[1]);
-                int j = Integer.parseInt(inputArr[2]);
+                if (inputArr.length < 3) {
+                    System.out.println("Error: You need at least 2 arguments for this command");
+                }
+                int i;
+                int j;
+                try {
+                    i = Integer.parseInt(inputArr[1]);
+                } catch(NumberFormatException e){
+                    System.out.println("Error: \"" + inputArr[1] + "\" is not an integer. Please enter an integer.");
+                    continue;
+                }
+                try {
+                    j = Integer.parseInt(inputArr[2]);
+                } catch(NumberFormatException e){
+                    System.out.println("Error: \"" + inputArr[2] + "\" is not an integer. Please enter an integer.");
+                    continue;
+                }
+                if (!Math.isInRange(i,1,dimM)) {
+                    System.out.println("Error: Row numbers must be between 1 and " + dimM + " inclusive. ");
+                    continue;
+                }
+                if (!Math.isInRange(j,1,dimM)) {
+                    System.out.println("Error: Row numbers must be between 0 and " + dimM + " inclusive. ");
+                    continue;
+                }
                 matrix.addRow(i-1,j-1);
                 System.out.println("The resulting matrix is below:");
                 System.out.println(matrix);
             } else if (inputArr[0].equals("D")) {
-                int i = Integer.parseInt(inputArr[1]);
+                if (inputArr.length < 2) {
+                    System.out.println("Error: You need at least 1 argument for this command");
+                }
+                int i;
+                try {
+                    i = Integer.parseInt(inputArr[1]);
+                } catch(NumberFormatException e){
+                    System.out.println("Error: \"" + inputArr[1] + "\" is not an integer. Please enter an integer.");
+                    continue;
+                }
+                if (!Math.isInRange(i,1,dimM)) {
+                    System.out.println("Error: Row numbers must be between 1 and " + dimM + " inclusive. ");
+                    continue;
+                }
                 matrix.descale(i-1);
                 System.out.println("The resulting matrix is below:");
                 System.out.println(matrix);
             } else if (inputArr[0].equals("C")) {
+                if (inputArr.length < 3) {
+                    System.out.println("Error: You need at least 2 arguments for this command");
+                }
                 int i = Integer.parseInt(inputArr[1]);
                 int j = Integer.parseInt(inputArr[2]);
                 String operation = matrix.cancel(i-1,j-1);
@@ -102,7 +189,7 @@ public class LinAlg {
             } else if (inputArr[0].equals("Q")) {
                 doQuit = true;
             } else {
-                System.out.println("\"" + input + "\" is not a valid command.");
+                System.out.println("Error: \"" + input + "\" is not a valid command. Press \"H\" to see the list of valid commands. ");
             }
         }
 

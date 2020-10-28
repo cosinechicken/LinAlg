@@ -37,4 +37,14 @@ public class Math {
         return gcd;
     }
 
+    // Checks if an integer is in a range (inclusive)
+    public static boolean isInRange (int num, int min, int max) {
+        if (num <= max && num >= min) {
+            return true;
+        }
+        return false;
+    }
+
+
+
 }
