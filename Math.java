@@ -45,6 +45,12 @@ public class Math {
         return false;
     }
 
-
+    public static int min(int i, int j) {
+        if (i < j) {
+            return i;
+        } else {
+            return j;
+        }
+    }
 
 }

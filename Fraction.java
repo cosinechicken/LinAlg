@@ -14,7 +14,26 @@ public class Fraction {
             throw new IllegalArgumentException("Denominator of fraction cannot be 0");
         }
     }
-    private void simplify() {
+    public int N() {
+        return N;
+    }
+    public int D() {
+        return D;
+    }
+    public void multiply(int c) {
+        this.N *= c;
+    }
+    public void multiply(Fraction f) {
+        this.N *= f.N();
+        this.D *= f.D();
+    }
+    public void divide(int c) {
+        if (c == 0) {
+            throw new IllegalArgumentException("Denominator of fraction cannot be 0");
+        }
+        this.D *= c;
+    }
+    public void simplify() {
         int gcd = Math.gcd(N, D);
         N /= gcd;
         D /= gcd;

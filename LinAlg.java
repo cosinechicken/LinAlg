@@ -37,7 +37,12 @@ public class LinAlg {
         String[] dimArr = dimString.split(" ");
         int dimM = Integer.parseInt(dimArr[0]);
         int dimN = Integer.parseInt(dimArr[1]);
-        Matrix matrix = new Matrix(dimM, dimN);
+        Matrix matrix;
+        if (dimM == dimN) {
+            matrix = new SquareMatrix(dimN);
+        } else {
+            matrix = new Matrix(dimM, dimN);
+        }
         System.out.println("Matrix has dimensions " + dimM + " x " + dimN + ". ");
         // Get matrix
         System.out.println("You will now the entries of the matrix, separated by a single space. ");
@@ -72,6 +77,7 @@ public class LinAlg {
                 System.out.println("\"C [i] [j]\": Adds one of row [i] and row [j] by a scalar multiple of the other row to simplify it. Prints out the operations used. For now should only run after descaling all rows");
                 System.out.println("\"REF\": Simplifies to REF form and shows work.");
                 System.out.println("\"RREF\": Simplifies to RREF form and shows work.");
+                System.out.println("\"DET\": Prints out the determinant.");
                 System.out.println("\"Q\": End the program.");
             } else if (inputArr[0].equals("S")) {
                 if (inputArr.length < 3) {
@@ -99,8 +105,7 @@ public class LinAlg {
                     System.out.println("Error: Row numbers must be between 0 and " + dimM + " inclusive. ");
                     continue;
                 }
-                String operation = matrix.swap(i-1,j-1);
-                System.out.println(operation);
+                matrix.swap(i-1,j-1,true);
                 System.out.println("The resulting matrix is below:");
                 System.out.println(matrix);
             } else if (inputArr[0].equals("X")) {
@@ -181,18 +186,23 @@ public class LinAlg {
                 }
                 int i = Integer.parseInt(inputArr[1]);
                 int j = Integer.parseInt(inputArr[2]);
-                String operation = matrix.cancel(i-1,j-1);
-                System.out.println(operation);
+                matrix.cancel(i-1,j-1, true);
                 System.out.println("The resulting matrix is below:");
                 System.out.println(matrix);
             } else if (inputArr[0].equals("REF")) {
-                System.out.println(matrix.toREF() + "\n");
+                matrix.toREF(true);
                 System.out.println("The resulting matrix is below:");
                 System.out.println(matrix);
             } else if (inputArr[0].equals("RREF")) {
-                System.out.println(matrix.toRREF() + "\n");
+                matrix.toREF(true);
                 System.out.println("The resulting matrix is below:");
                 System.out.println(matrix);
+            } else if (inputArr[0].equals("DET")) {
+                if (matrix instanceof SquareMatrix) {
+                    System.out.println("Determinant is: " + ((SquareMatrix) matrix).computeDet());
+                } else {
+                    System.out.println("Error: Determinant of non-square matrix is undefined.");
+                }
             } else if (inputArr[0].equals("Q")) {
                 doQuit = true;
             } else {

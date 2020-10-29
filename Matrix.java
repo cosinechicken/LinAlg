@@ -8,11 +8,11 @@ import static com.company.LinAlg.LinAlg.showPivots;
  * Created by Brandon on 10/22/2020, 10:53 AM.
  */
 public class Matrix {
-    private int[][] vals;
+    public int[][] vals;
     // Position of leftmost nonzero number in each row
-    private int[] pivots;
-    private int M;
-    private int N;
+    public int[] pivots;
+    public int M;
+    public int N;
     public Matrix(int M, int N) {
         // M is number of rows, N is number of columns
         this.M = M;
@@ -75,8 +75,8 @@ public class Matrix {
         return str;
     }
     // Swap rows i and j (1-based indices)
-    // Return the string it is supposed to print
-    public String swap(int i, int j) {
+    // Prints if print == true
+    public void swap(int i, int j, boolean print) {
         int temp;
         for (int k = 0; k < N; k++) {
             temp = vals[i][k];
@@ -86,16 +86,19 @@ public class Matrix {
         temp = pivots[i];
         pivots[i] = pivots[j];
         pivots[j] = temp;
-        return ("R_" + (i+1) + " <-> R_" + (j+1));
+        if (print) {
+            System.out.println("R_" + (i+1) + " <-> R_" + (j+1));
+        }
     }
-    // Scale values in row i by some integer scale
-    public void scale(int i, int scale) {
+    // Scale values in row i by some integer scale, returns the scale
+    public int scale(int i, int scale) {
         for (int j = 0; j < N; j++) {
             vals[i][j] *= scale;
         }
         if (scale == 0) {
             pivots[i] = N;
         }
+        return scale;
     }
     // Add row i to row j
     public void addRow(int i, int j) {
@@ -140,13 +143,11 @@ public class Matrix {
     }
     // Adds a scalar multiple of row i to row j so that vals[j][pivots[i]] = 0 (or vice versa)
     // Also helper method for toREF()
-    // Returns the string it is supposed to print
-    public String cancel(int i, int j) {
+    // Prints the string it is supposed to print if print is true
+    public Fraction cancel(int i, int j, boolean print) {
         // (a,b) = (i,j) if pivots[i] > pivots[j] or pivots[i] = pivots[j] and i < j, and (j,i) otherwise
-        int a;
-        int b;
-        // String to print
-        String ret = "";
+        int a, b;
+        Fraction multiplier = new Fraction(1,1);
         if (pivots[i] > pivots[j] || (pivots[i] == pivots[j] && i < j)) {
             a = i;
             b = j;
@@ -155,17 +156,24 @@ public class Matrix {
             b = i;
         }
         // Now begin cancelling
+        // First step is scale down both rows
         int aScale = this.descale(a);
         if (aScale != 1) {
             Fraction aScaleFrac = new Fraction(1,aScale);
-            ret += "R_" + (a + 1) + " -> (" + aScaleFrac + ") * R_" + (a + 1) + "\n";
-            ret += this.toString() + "\n";
+            multiplier.multiply(aScale);
+            if (print) {
+                System.out.println("R_" + (a + 1) + " -> (" + aScaleFrac + ") * R_" + (a + 1) + "\n");
+                System.out.println(this.toString() + "\n");
+            }
         }
         int bScale = this.descale(b);
         if (bScale != 1) {
             Fraction bScaleFrac = new Fraction(1,bScale);
-            ret += "R_" + (b + 1) + " -> (" + bScaleFrac + ") * R_" + (b + 1) + "\n";
-            ret += this.toString() + "\n";
+            multiplier.multiply(bScale);
+            if (print) {
+                System.out.println("R_" + (b + 1) + " -> (" + bScaleFrac + ") * R_" + (b + 1) + "\n");
+                System.out.println(this.toString() + "\n");
+            }
         }
 
         // Fraction written in form scaleA_N/scaleA_D
@@ -176,22 +184,29 @@ public class Matrix {
 
         this.scale(a,scaleA_N);
         this.scale(b,scaleA_D);
+        multiplier.divide(scaleA_N);
+        multiplier.divide(scaleA_D);
         this.addRow(a, b);
-        this.descale(a);
+        multiplier.multiply(this.descale(a));
         int scaleB_D = this.descale(b);
+        multiplier.multiply(scaleB_D);
 
         Fraction scaleAFrac = new Fraction(scaleA_N, scaleB_D);
         Fraction scaleBFrac = new Fraction(scaleA_D, scaleB_D);
 
-        ret += ("R_" + (b+1) + " -> (" + scaleBFrac + ") * R_" + (b+1) + " + (" + scaleAFrac + ") * R_" + (a+1));
-        return ret;
+        if (print) {
+            System.out.println("R_" + (b+1) + " -> (" + scaleBFrac + ") * R_" + (b+1) + " + (" + scaleAFrac + ") * R_" + (a+1));
+        }
+        multiplier.simplify();
+        return multiplier;
     }
     // Helper methods
 
 
-    // REF stands for Row Echelon Form [I]
-    public String toREF() {
-        String ret = "";
+    // REF stands for Row Echelon Form
+    // print determines whether to print the steps
+    public Fraction toREF(boolean print) {
+        Fraction multiplier = new Fraction(1,1);
         // First find rows with minimum value for pivot
         ArrayList<Integer> arr = new ArrayList<>();
         for (int i = 0; i < M; i++) {
@@ -209,36 +224,58 @@ public class Matrix {
             }
             if (pivotVal < N) {
                 if (firstIndex != i) {
-                    ret += (this.swap(i, firstIndex) + "\n");
-                    ret += (this.toString() + "\n");
+                    this.swap(i, firstIndex, print);
+                    multiplier.multiply(-1);
+                    if (print) {
+                        System.out.println();
+                        System.out.println(this.toString() + "\n");
+                    }
                 }
                 // Now we can assume the index we want to apply this.cancel() with is at i
                 for (int j = 0; j < arr.size(); j++) {
-                    ret += (this.cancel(i, arr.get(j)) + "\n");
-                    ret += (this.toString() + "\n");
+                    multiplier.multiply(this.cancel(i, arr.get(j), print));
+                    if (print) {
+                        System.out.println();
+                        System.out.println(this.toString() + "\n");
+                    }
+                    multiplier.simplify();
                 }
             }
         }
         // At this point all nonzero rows should have distinct pivots
-        return ret;
-
+        for (int i = 0; i < Math.min(M, N); i++) {
+            multiplier.multiply(vals[i][i]);
+        }
+        multiplier.simplify();
+        return multiplier;
     }
 
-    public String toRREF() {
+    public void toRREF(boolean print) {
         String ret = "";
-        ret += this.toREF();
+        this.toREF(print);
         // Go through rows and cancel with rows above them
         for (int i = M-1; i >= 0; i--) {
             if (pivots[i] < N) {
                 for (int j = 0; j < i; j++) {
                     if (vals[j][pivots[i]] != 0) {
-                        ret += (this.cancel(i, j) + "\n");
-                        ret += (this.toString() + "\n");
+                        this.cancel(i, j, print);
+                        if (print) {
+                            System.out.println();
+                            System.out.println(this.toString() + "\n");
+                        }
                     }
                 }
             }
         }
-        // At this point we have an RREF (with all rows multiplied by a constant so that entries are all still integers
+    }
+
+    public Matrix copy() {
+        Matrix ret = new Matrix(M, N);
+        for (int i = 0; i < M; i++) {
+            for (int j = 0; j < N; j++) {
+                ret.setValue(vals[i][j], i, j);
+            }
+        }
         return ret;
     }
 }
