@@ -223,4 +223,22 @@ public class Matrix {
         return ret;
 
     }
+
+    public String toRREF() {
+        String ret = "";
+        ret += this.toREF();
+        // Go through rows and cancel with rows above them
+        for (int i = M-1; i >= 0; i--) {
+            if (pivots[i] < N) {
+                for (int j = 0; j < i; j++) {
+                    if (vals[j][pivots[i]] != 0) {
+                        ret += (this.cancel(i, j) + "\n");
+                        ret += (this.toString() + "\n");
+                    }
+                }
+            }
+        }
+        // At this point we have an RREF (with all rows multiplied by a constant so that entries are all still integers
+        return ret;
+    }
 }
