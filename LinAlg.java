@@ -194,7 +194,7 @@ public class LinAlg {
                 System.out.println("The resulting matrix is below:");
                 System.out.println(matrix);
             } else if (inputArr[0].equals("RREF")) {
-                matrix.toREF(true);
+                matrix.toRREF(true);
                 System.out.println("The resulting matrix is below:");
                 System.out.println(matrix);
             } else if (inputArr[0].equals("DET")) {
