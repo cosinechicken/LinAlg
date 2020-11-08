@@ -45,6 +45,7 @@ public class Math {
         return false;
     }
 
+    // Returns the smaller of the two numbers.
     public static int min(int i, int j) {
         if (i < j) {
             return i;

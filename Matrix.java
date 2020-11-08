@@ -47,7 +47,6 @@ public class Matrix {
         // FInd pivot (inefficient, should improve)
         boolean isNonZero = false;
         for (int k = 0; k < N; k++) {
-            this.vals[i][k] = vals[i][k];
             if (vals[i][k] != 0 && !isNonZero) {
                 isNonZero = true;
                 pivots[i] = k;
