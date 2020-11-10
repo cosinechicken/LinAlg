@@ -58,10 +58,21 @@ public class Matrix {
     }
     public String toString() {
         String str = "";
+        ArrayList<Integer> colDigits = new ArrayList<>();
+        for (int j = 0; j < N; j++) {
+            colDigits.add(0);
+            for (int i = 0; i < M; i++) {
+                if (colDigits.get(j) < Math.digitNum(this.vals[i][j])) {
+                    colDigits.set(j, Math.digitNum(this.vals[i][j]));
+                }
+            }
+        }
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < N; j++) {
                 str += vals[i][j];
-                str += "\t";
+                for (int k = Math.digitNum(this.vals[i][j]); k <= Math.max(colDigits.get(j), 2); k++) {
+                    str += " ";
+                }
             }
             str += "\n";
         }

@@ -53,4 +53,28 @@ public class Math {
             return j;
         }
     }
+
+    // Returns the larger of the two numbers.
+    public static int max(int i, int j) {
+        if (i > j) {
+            return i;
+        } else {
+            return j;
+        }
+    }
+
+    // Returns the number of digits in a number
+    public static int digitNum(int i) {
+        int digits = 0;
+        if (i < 0) {
+            digits++;
+        }
+        i = Math.abs(i);
+        while (i >= 10) {
+            i = i / 10;
+            digits++;
+        }
+        digits++;
+        return digits;
+    }
 }

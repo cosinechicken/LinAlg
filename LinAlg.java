@@ -1,7 +1,5 @@
 package com.company.LinAlg;
 
-import com.sun.org.apache.xpath.internal.SourceTree;
-
 import java.util.Scanner;
 
 /**
@@ -61,8 +59,8 @@ public class LinAlg {
         System.out.println(matrix);
         //
         // Keep taking commands until user wants to quit
-        boolean doQuit = false;
-        while (!doQuit) {
+        boolean quitNow = false;
+        while (!quitNow) {
             System.out.println("Enter next command (enter \"H\" for help): ");
             System.out.print(">> ");
             String input = scanner.nextLine();
@@ -102,7 +100,7 @@ public class LinAlg {
                     continue;
                 }
                 if (!Math.isInRange(j,1,dimM)) {
-                    System.out.println("Error: Row numbers must be between 0 and " + dimM + " inclusive. ");
+                    System.out.println("Error: Row numbers must be between 1 and " + dimM + " inclusive. ");
                     continue;
                 }
                 matrix.swap(i-1,j-1,true);
@@ -184,8 +182,28 @@ public class LinAlg {
                 if (inputArr.length < 3) {
                     System.out.println("Error: You need at least 2 arguments for this command");
                 }
-                int i = Integer.parseInt(inputArr[1]);
-                int j = Integer.parseInt(inputArr[2]);
+                int i;
+                int j;
+                try {
+                    i = Integer.parseInt(inputArr[1]);
+                } catch(NumberFormatException e){
+                    System.out.println("Error: \"" + inputArr[1] + "\" is not an integer. Please enter an integer.");
+                    continue;
+                }
+                try {
+                    j = Integer.parseInt(inputArr[2]);
+                } catch(NumberFormatException e){
+                    System.out.println("Error: \"" + inputArr[2] + "\" is not an integer. Please enter an integer.");
+                    continue;
+                }
+                if (!Math.isInRange(i,1,dimM)) {
+                    System.out.println("Error: Row numbers must be between 1 and " + dimM + " inclusive. ");
+                    continue;
+                }
+                if (!Math.isInRange(j,1,dimM)) {
+                    System.out.println("Error: Row numbers must be between 0 and " + dimM + " inclusive. ");
+                    continue;
+                }
                 matrix.cancel(i-1,j-1, true);
                 System.out.println("The resulting matrix is below:");
                 System.out.println(matrix);
@@ -204,7 +222,7 @@ public class LinAlg {
                     System.out.println("Error: Determinant of non-square matrix is undefined.");
                 }
             } else if (inputArr[0].equals("Q")) {
-                doQuit = true;
+                quitNow = true;
             } else {
                 System.out.println("Error: \"" + input + "\" is not a valid command. Press \"H\" to see the list of valid commands. ");
             }
