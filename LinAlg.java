@@ -76,6 +76,7 @@ public class LinAlg {
                 System.out.println("\"REF\": Simplifies to REF form and shows work.");
                 System.out.println("\"RREF\": Simplifies to RREF form and shows work.");
                 System.out.println("\"DET\": Prints out the determinant.");
+                System.out.println("\"MULT\": Multiply with a vector to be specified.");
                 System.out.println("\"Q\": End the program.");
             } else if (inputArr[0].equals("S")) {
                 if (inputArr.length < 3) {
@@ -221,6 +222,28 @@ public class LinAlg {
                 } else {
                     System.out.println("Error: Determinant of non-square matrix is undefined.");
                 }
+            } else if (inputArr[0].equals("MULT")) {
+                System.out.println("What vector would you like to multiply the matrix with?");
+                Vector vector = new Vector(matrix.N);
+                boolean valid = true;
+                for (int i = 0; i < matrix.N; i++) {
+                    System.out.print("Enter the value for the vector in row " + (i+1) + ": ");
+                    String curInput = scanner.nextLine();
+                    try {
+                        int curVal = Integer.parseInt(curInput);
+                        vector.setValue(curVal, i);
+                    } catch(NumberFormatException e){
+                        System.out.println("Error: \"" + curInput + "\" is not an integer. Please enter an integer.");
+                        valid = false;
+                        break;
+                    }
+                }
+                if (!valid) {
+                    continue;
+                }
+                System.out.println(matrix.toString() + "* \n" + vector.toString() + "= ");
+                Vector result = Math.multiply(matrix, vector);
+                System.out.println(result.toString());
             } else if (inputArr[0].equals("Q")) {
                 quitNow = true;
             } else {

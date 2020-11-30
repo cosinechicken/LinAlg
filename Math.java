@@ -77,4 +77,18 @@ public class Math {
         digits++;
         return digits;
     }
+    public static Vector multiply(Matrix matrix, Vector vector) {
+        if(vector.N != matrix.N) {
+            throw new IllegalArgumentException("Vector is not correct size");
+        }
+        Vector result = new Vector(matrix.M);
+        for (int i = 0; i < matrix.M; i++) {
+            int temp = 0;
+            for (int j = 0; j < matrix.N; j++) {
+                temp += matrix.vals[i][j] * vector.vals[j];
+            }
+            result.setValue(temp, i);
+        }
+        return result;
+    }
 }
