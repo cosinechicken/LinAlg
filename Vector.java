@@ -21,4 +21,31 @@ public class Vector {
         }
         return str;
     }
+
+    // Takes dot product of two integer vectors
+    public static int dot(Vector v1, Vector v2) {
+        int res = 0;
+        for (int i = 0; i < v1.N; i++) {
+            res += v1.vals[i]*v2.vals[i];
+        }
+        return res;
+    }
+
+    // Adds two integer vectors
+    public static Vector add(Vector v1, Vector v2) {
+        Vector res = new Vector(v1.N);
+        for (int i = 0; i < v1.N; i++) {
+            res.setValue(v1.vals[i] + v2.vals[i], i);
+        }
+        return res;
+    }
+
+    // Multiply an integer vector by a constant
+    public static Vector mult(Vector v, int sc) {
+        Vector res = new Vector(v.N);
+        for (int i = 0; i < v.N; i++) {
+            res.setValue(v.vals[i]*sc, i);
+        }
+        return res;
+    }
 }

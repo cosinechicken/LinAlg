@@ -77,6 +77,7 @@ public class LinAlg {
                 System.out.println("\"RREF\": Simplifies to RREF form and shows work.");
                 System.out.println("\"DET\": Prints out the determinant.");
                 System.out.println("\"MULT\": Multiply with a vector to be specified.");
+                System.out.println("\"O\": Find an orthogonal basis of the rows of the matrix");
                 System.out.println("\"Q\": End the program.");
             } else if (inputArr[0].equals("S")) {
                 if (inputArr.length < 3) {
@@ -244,6 +245,14 @@ public class LinAlg {
                 System.out.println(matrix.toString() + "* \n" + vector.toString() + "= ");
                 Vector result = Math.multiply(matrix, vector);
                 System.out.println(result.toString());
+            } else if (inputArr[0].equals("O")) {
+                for (int i = 0; i < matrix.M; i++) {
+                    for (int j = 0; j < i; j++) {
+                        // We want to turn R_i into the projection of R_i onto R_j
+                        matrix.project(i, j);
+                    }
+                }
+                System.out.println(matrix.toString());
             } else if (inputArr[0].equals("Q")) {
                 quitNow = true;
             } else {

@@ -279,6 +279,30 @@ public class Matrix {
         }
     }
 
+    // Turns Row_i into the projection of Row_i onto Row_j, should usually only be used when i > j
+    public void project(int i, int j) {
+        Vector vi = this.getRow(i);
+        Vector vj = this.getRow(j);
+        Vector v = Vector.add(Vector.mult(vi,Vector.dot(vj,vj)), Vector.mult(vj,-Vector.dot(vi,vj)));
+        setRow(v, i);
+        descale(i);
+    }
+
+    // Set a row of the matrix to the vector
+    public void setRow(Vector v, int i) {
+        for (int j = 0; j < N; j++) {
+            this.setValue(v.vals[j], i, j);
+        }
+    }
+
+    // Turns a row of the matrix to the vector
+    public Vector getRow(int i) {
+        Vector res = new Vector(N);
+        for (int j = 0; j < N; j++) {
+            res.setValue(this.vals[i][j], j);
+        }
+        return res;
+    }
 
     public Matrix copy() {
         Matrix ret = new Matrix(M, N);
