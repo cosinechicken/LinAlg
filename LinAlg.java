@@ -247,6 +247,7 @@ public class LinAlg {
                 System.out.println(result.toString());
             } else if (inputArr[0].equals("O")) {
                 for (int i = 0; i < matrix.M; i++) {
+                    matrix.descale(i);
                     for (int j = 0; j < i; j++) {
                         // We want to turn R_i into the projection of R_i onto R_j
                         matrix.project(i, j);
